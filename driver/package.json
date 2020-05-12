@@ -10,5 +10,8 @@
     "test-watch": "jest --watchAll --verbose --coverage"
   },
   "author": "Joel Watson",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "faker": "^4.1.0"
+  }
 }
