@@ -29,4 +29,4 @@ Your application should automatically generate random orders every 5 seconds. Th
 
 ### UML
 
-![UML 16](https://raw.githubusercontent.com/401-advanced-javascript-joel/#)
+![UML 17](https://raw.githubusercontent.com/401-advanced-javascript-joel/CAPS/master/assets/lab-17-uml.jpg)
