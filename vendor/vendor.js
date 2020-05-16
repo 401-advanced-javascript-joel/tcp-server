@@ -1,31 +1,21 @@
 'use strict';
 
-const net = require('net');
-
+const io = require('socket.io-client');
 const faker = require('faker');
 
-const socket = net.Socket();
+const socket = io.connect('http://localhost:3000/csps');
 
-socket.connect({ port: 3000, host: 'localhost' }, () => {
+socket.on('connect', () => {
+  socket.emit('join', { room: 'The Vendor Room' });
   console.log('Connected to TCP Socket Server!');
 });
 
-socket.on('data', (payload) => {
-  let string = Buffer.from(payload).toString();
-  let parsed = {};
+socket.on('delivered', (payload) => {
+  console.log(`VENDOR: Thank you for delivering order ${payload.orderID}`);
+});
 
-  try {
-    parsed = JSON.parse(string);
-  } catch (e) {
-    parsed = {};
-  }
-
-  if (parsed.event && parsed.payload) {
-    if (parsed.event === 'delivered')
-      console.log(
-        `VENDOR: Thank you for delivering order ${parsed.payload.orderID}`,
-      );
-  }
+socket.on('disconnect', () => {
+  console.log('Disconnected from TCP Socket Server!');
 });
 
 setInterval(() => {
@@ -36,5 +26,5 @@ setInterval(() => {
     customer: `${faker.name.firstName()} ${faker.name.lastName()}`,
     address: `${faker.address.streetAddress()}, ${faker.address.city()}, ${faker.address.stateAbbr()}`,
   };
-  socket.write(JSON.stringify({ event: 'pickup', payload: order }));
+  socket.emit('pickup', order);
 }, 5000);
