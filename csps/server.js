@@ -1,66 +1,42 @@
 'use strict';
 
-const net = require('net');
-const server = net.createServer();
+const io = require('socket.io')(3000).of('/csps');
 
-// Create a pool of connected sockets
-const socketPool = [];
-const port = process.env.SERVER_PORT || 3000;
-
-server.on('error', (err) => {
+io.on('error', (err) => {
   // Handle errors here.
   console.error(err);
 });
 
-server.on('connection', (socket) => {
-  // Add socket too pool
-  socketPool.push(socket);
-  console.log('New Connection:', socket.address());
+io.on('connection', (socket) => {
+  console.log('New Connection:', socket.id);
 
-  // Read incoming data & broadcast it to everyone
-  socket.on('data', (payload) => {
-    let string = Buffer.from(payload).toString();
-    let parsed = {};
+  socket.on('join', (payload) => {
+    socket.join(`${payload.room}`);
+    console.log(`${socket.id} has joined room: "${payload.room}"`);
+  });
 
-    try {
-      parsed = JSON.parse(string);
-    } catch (e) {
-      parsed = {};
-    }
+  socket.on('pickup', (payload) => {
+    console.log(`EVENT: pickup
+  - Time: ${payload.time}
+  - Store: ${payload.store}
+  - OrderID: ${payload.orderID}
+  - Customer: ${payload.customer}
+  - Address: ${payload.address}`);
+    io.to('The Driver Room').emit('pickup', payload);
+  });
 
-    if (parsed.event && parsed.payload) {
-      switch (parsed.event) {
-        case 'pickup':
-          console.log(`EVENT: pickup
-  - Time: ${parsed.payload.time}
-  - Store: ${parsed.payload.store}
-  - OrderID: ${parsed.payload.orderID}
-  - Customer: ${parsed.payload.customer}
-  - Address: ${parsed.payload.address}`);
-          socketPool.forEach((socket) => {
-            socket.write(payload);
-          });
-          break;
-        case 'in-transit':
-          console.log(`EVENT: in-transit order ${parsed.payload.orderID}`);
-          socketPool.forEach((socket) => {
-            socket.write(payload);
-          });
-          break;
-        case 'delivered':
-          console.log(`EVENT: delivered order ${parsed.payload.orderID}`);
-          socketPool.forEach((socket) => {
-            socket.write(payload);
-          });
-          break;
-        default:
-        // Do nothing
-      }
-    }
+  socket.on('in-transit', (payload) => {
+    console.log(`EVENT: in-transit order ${payload.orderID}`);
+    io.to('The Driver Room').emit('in-transit', payload);
+  });
+
+  socket.on('delivered', (payload) => {
+    console.log(`EVENT: delivered order ${payload.orderID}`);
+    io.to('The Vendor Room').emit('delivered', payload);
   });
 });
 
-// Grab an arbitrary unused port.
-server.listen(port, () => {
-  console.log('Server up and listening on ', port);
+io.on('disconnect', () => {
+  // Handle errors here.
+  console.log('Server Disconnected');
 });

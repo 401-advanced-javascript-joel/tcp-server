@@ -1,4 +1,4 @@
-# Lab 17 - TCP Server
+# Lab 17 & 18 - TCP Server - Socket.io
 
 Your application must simulate the order and delivery of an item, from seller to customer. The seller (or vendor) should alert the system that a package needs to be delivered, and a delivery driver should alert the system when a package is picked up for delivery. The driver should also alert the system when the package has been delivered. Thus, you should have three major events being communicated:
 
@@ -14,6 +14,8 @@ Your application should automatically generate random orders every 5 seconds. Th
 
 - [PR Lab 17](https://github.com/401-advanced-javascript-joel/tcp-server/pull/1)
 - [CI/CD Lab 17](https://github.com/401-advanced-javascript-joel/tcp-server/pull/1/checks)
+- [PR Lab 18](https://github.com/401-advanced-javascript-joel/tcp-server/pull/2)
+- [CI/CD Lab 18](https://github.com/401-advanced-javascript-joel/tcp-server/pull/2/checks)
 
 ### Setup
 
