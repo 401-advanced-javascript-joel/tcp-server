@@ -32,7 +32,11 @@ io.on('connection', (socket) => {
 
   socket.on('delivered', (payload) => {
     console.log(`EVENT: delivered order ${payload.orderID}`);
-    io.to('The Vendor Room').emit('delivered', payload);
+    if (payload.store === "Joel's Jams") {
+      io.to('The Jam Room').emit('delivered', payload);
+    } else {
+      io.to('The Jar Room').emit('delivered', payload);
+    }
   });
 });
 
